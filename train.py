@@ -29,17 +29,18 @@ from torch.utils.data import DataLoader
 
 from models.efficientdet import EfficientDet
 from models.losses import FocalLoss
-from datasets import VOCDetection, CocoDataset, get_augumentation, detection_collate, Resizer, Normalizer, Augmenter, collater
+from datasets import VOCDetection, CocoDataset, get_augumentation, detection_collate, 
+    Resizer, Normalizer, Augmenter, collater, RDDDetection
 from utils import EFFICIENTDET, get_state_dict
 from eval import evaluate, evaluate_coco
 
 parser = argparse.ArgumentParser(description='PyTorch ImageNet Training')
-parser.add_argument('--dataset', default='VOC', choices=['VOC', 'COCO'],
-                    type=str, help='VOC or COCO')
+parser.add_argument('--dataset', default='VOC', choices=['VOC', 'COCO', 'RDD'],
+                    type=str, help='VOC or COCO or RDD')
 parser.add_argument(
     '--dataset_root',
     default='/root/data/VOCdevkit/',
-    help='Dataset root directory path [/root/data/VOCdevkit/, /root/data/coco/]')
+    help='Dataset root directory path [/root/data/VOCdevkit/, /root/data/coco/, /root/data/rdd/]')
 parser.add_argument('--network', default='efficientdet-d0', type=str,
                     help='efficientdet-[d0, d1, ..]')
 
@@ -194,6 +195,15 @@ def main_worker(gpu, ngpus_per_node, args):
                 [
                     Normalizer(),
                     Resizer()]))
+        args.num_class = train_dataset.num_classes()
+    elif(args.dataset == 'RDD'):
+        train_dataset = RDDDetection(root=args.dataset_root, transform=transforms.Compose(
+            [Normalizer(), Augmenter(), Resizer()]))
+        valid_dataset = RDDDetection(root=args.dataset_root,
+            image_sets=[('Adachi', 'val'), ('Chiba', 'val'),('Muroran', 'val'),
+                        ('Ichihara', 'val'), ('Sumida', 'val'), ('Nagakute', 'val'),
+                        ('Numazu', 'val')],
+            transform=transforms.Compose([Normalizer(), Resizer()]))
         args.num_class = train_dataset.num_classes()
 
     train_loader = DataLoader(train_dataset,

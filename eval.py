@@ -345,7 +345,7 @@ if __name__ == '__main__':
     parser.add_argument('--dataset', default='VOC', choices=['VOC', 'COCO'],
                         type=str, help='VOC or COCO')
     parser.add_argument('--dataset_root', default='/root/data/VOCdevkit/',
-                        help='Dataset root directory path [/root/data/VOCdevkit/, /root/data/coco/]')
+                        help='Dataset root directory path [/root/data/VOCdevkit/, /root/data/coco/, /root/data/rdd/]')
     parser.add_argument('-t', '--threshold', default=0.4,
                         type=float, help='Visualization threshold')
     parser.add_argument('-it', '--iou_threshold', default=0.5,
@@ -376,6 +376,13 @@ if __name__ == '__main__':
     if(args.dataset == 'VOC'):
         valid_dataset = VOCDetection(root=args.dataset_root, image_sets=[('2007', 'test')],
                                      transform=transforms.Compose([Normalizer(), Resizer()]))
+        evaluate(valid_dataset, model)
+    elif(args.dataset == 'RDD'):
+        valid_dataset = RDDDetection(root=args.dataset_root,
+            image_sets=[('Adachi', 'val'), ('Chiba', 'val'),('Muroran', 'val'),
+                        ('Ichihara', 'val'), ('Sumida', 'val'), ('Nagakute', 'val'),
+                        ('Numazu', 'val')],
+            transform=transforms.Compose([Normalizer(), Resizer()]))
         evaluate(valid_dataset, model)
     else:
         valid_dataset = CocoDataset(root_dir=args.dataset_root, set_name='val2017',
