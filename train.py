@@ -29,8 +29,7 @@ from torch.utils.data import DataLoader
 
 from models.efficientdet import EfficientDet
 from models.losses import FocalLoss
-from datasets import VOCDetection, CocoDataset, get_augumentation, detection_collate, 
-    Resizer, Normalizer, Augmenter, collater, RDDDetection
+from datasets import VOCDetection, CocoDataset, get_augumentation, detection_collate,Resizer, Normalizer, Augmenter, collater, RDDDetection
 from utils import EFFICIENTDET, get_state_dict
 from eval import evaluate, evaluate_coco
 
